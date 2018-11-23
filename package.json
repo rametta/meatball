@@ -1,0 +1,13 @@
+{
+  "name": "meatball",
+  "version": "1.0.0",
+  "description": "Future based redux side effects",
+  "main": "src/index.js",
+  "repository": "https://github.com/rametta/meatball.git",
+  "author": "Jason Rametta",
+  "license": "Apache-2.0",
+  "private": false,
+  "peerDependencies": {
+    "fluture": "10.x"
+  }
+}
