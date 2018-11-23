@@ -26,7 +26,7 @@ const dispatcher = dispatch => actions => {
 
 // meatball :: Epic[] -> Store -> Next -> Action -> IO
 const meatball = epics => {
-  if (epics && epics.constructor !== Array) {
+  if (!epics || epics.constructor !== Array) {
     throw new Error('EPICS PASSED TO MEATBALL MUST BE AN ARRAY')
   }
   
