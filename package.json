@@ -1,6 +1,6 @@
 {
   "name": "meatball",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Future based redux side effects",
   "main": "src/index.js",
   "repository": "https://github.com/rametta/meatball.git",
