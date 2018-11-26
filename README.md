@@ -19,20 +19,42 @@ Meatball has a peer dependency on [fluture](https://github.com/fluture-js/Flutur
 yarn add fluture
 ```
 
-## Usage example
+## Usage examples
+Listen to any redux action, perform side effect, return a new redux action to be fired
 ```js
 // epics.js
-import { action1, action2 } from './reducer'
-import { after } from 'fluture'
+import { searchRes, searchErr } from './reducer'
+import { tryP, after } from 'fluture'
 
-const epic1 = actionType => actionType('ACTION_1')
-  .chain(({ payload }) => after(1500, action2('hello')))
-  .mapRej(() => action2('fail'))
+// Simple example
+const simpleEpic = {
+  type: 'SUBMIT_SEARCH', // listen for this action
+  do: ({ payload }) => tryP(() => fetch(payload)) // fetch async data
+    .map(res => res.json())
+    .map(data => searchRes(data)) // redux action to save data
+    .mapRej(e => searchErr(e)) // redux action for handling error
+}
 
-const epic2 = actionType => actionType('ACTION_2')
-  .map(({ payload }) => [action1('bonjour')])
+// Return multiple actions with an array
+const multipleEpic = {
+  type: 'SUBMIT_SEARCH', // listen for this action
+  do: ({ payload }) => tryP(() => fetch(payload)) // fetch async data
+    .map(res => res.json())
+    .map(data => [searchRes(data), clearSidebar()]) // multiple actions
+}
 
-export default [ epic1, epic2 ]
+// Complex example
+const complexEpic = {
+  type: 'SUBMIT_SEARCH', // listen for this action
+  latest: true, // Like rxjs switchMap, cancels previous action if not resolved
+  do: ({ payload }) => after(200, payload) // delay fetching data for 200ms
+    .chain(text => tryP(() => fetch(text)))
+    .map(res => res.json())
+    .map(data => [searchRes(data), clearSidebar()]) // multiple actions
+    .mapRej(searchErr)
+}
+
+export default [ simpleEpic, multipleEpic, complexEpic ]
 
 // index.js
 import meatball from 'meatball'

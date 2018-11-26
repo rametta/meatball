@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from "react-redux";
-import { setText1, setText2 } from './reducer'
+import { setText1, setText2, doAsync } from './reducer'
 
 const App = props => 
   <>
@@ -9,6 +9,8 @@ const App = props =>
 
     <button type="button" onClick={() => props.setText2('hello2')}>set2 hello</button>
     <button type="button" onClick={() => props.setText2('goodbye2')}>set2 goodbye</button>
+
+    <button type="button" onClick={() => props.doAsync(Date.now())}>async action</button>
   </>
 
-export default connect(state => ({ state }), { setText1, setText2 })(App);
+export default connect(state => ({ state }), { setText1, setText2, doAsync })(App);

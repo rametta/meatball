@@ -1,12 +1,4 @@
-const { of, never } = require('fluture')
-
-// epicHandler :: Result -> Action -> String -> Future
-const epicHandler = result => action => epicType =>
-  action.type === epicType
-    ? of(result)
-    : never
-
-// dispatcher :: Dispatch -> Actions -> IO
+// dispatcher :: Dispatch -> Action|Action[] -> IO
 const dispatcher = dispatch => actions => {
   if (!actions) {
     return
@@ -27,21 +19,34 @@ const dispatcher = dispatch => actions => {
 // meatball :: Epic[] -> Store -> Next -> Action -> IO
 const meatball = epics => {
   if (!epics || epics.constructor !== Array) {
-    throw new Error('EPICS PASSED TO MEATBALL MUST BE AN ARRAY')
+    throw new Error('MEATBALL EPICS MUST BE AN ARRAY')
   }
+
+  let counter = 1
+  const cache = {}
   
   return store => next => action => {
 
     const preActionState = store.getState()
-    
     const result = next(action)
-
     const actioner = dispatcher(store.dispatch)
 
-    epics.map(
-      epic => epic(epicHandler(result)(action), preActionState)
-        .fork(actioner, actioner)
-    )
+    epics
+      .filter(epic => epic.type.indexOf(action.type) > -1)
+      .forEach(epic => {
+        const unsub = epic.do(result, preActionState).fork(actioner, actioner)
+
+        if (epic.latest) {
+          const id = counter++
+
+          if (cache[epic.type.toString()] && cache[epic.type.toString()].id !== id) {
+            cache[epic.type.toString()].unsub()
+          }
+
+          cache[epic.type] = { id, unsub }
+        }
+
+      })
     
   }
 }
