@@ -16,6 +16,9 @@ const dispatcher = dispatch => actions => {
   }
 }
 
+// epicFilter :: Epic[] -> Action
+const epicFilter = epic => epic.types === Array ? epic.type.filter(x => x===action.type) : epic.type===action.type
+
 // meatball :: Epic[] -> Store -> Next -> Action -> IO
 const meatball = epics => {
   if (!epics || epics.constructor !== Array) {
@@ -32,7 +35,7 @@ const meatball = epics => {
     const actioner = dispatcher(store.dispatch)
 
     epics
-      .filter(epic => epic.type.indexOf(action.type) > -1)
+      .filter(epic => epicFilter)
       .forEach(epic => {
         const unsub = epic.do(result, postActionState).fork(actioner, actioner)
 
