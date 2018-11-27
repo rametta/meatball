@@ -6,7 +6,7 @@ const dispatcher = dispatch => actions => {
 
   // An array of actions was returned
   if (actions.constructor === Array) {
-    actions.map(a => dispatch(a))
+    actions.map(dispatch)
     return
   }
 
@@ -27,14 +27,14 @@ const meatball = epics => {
   
   return store => next => action => {
 
-    const preActionState = store.getState()
     const result = next(action)
+    const postActionState = store.getState()
     const actioner = dispatcher(store.dispatch)
 
     epics
       .filter(epic => epic.type.indexOf(action.type) > -1)
       .forEach(epic => {
-        const unsub = epic.do(result, preActionState).fork(actioner, actioner)
+        const unsub = epic.do(result, postActionState).fork(actioner, actioner)
 
         if (epic.latest) {
           const id = counter++
@@ -51,4 +51,4 @@ const meatball = epics => {
   }
 }
 
-module.exports = meatball
+export default meatball

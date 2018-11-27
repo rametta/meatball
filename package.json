@@ -1,8 +1,8 @@
 {
   "name": "meatball",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Future based redux side effects",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "repository": "https://github.com/rametta/meatball.git",
   "bugs": {
     "url": "https://github.com/rametta/meatball/issues"
@@ -10,8 +10,16 @@
   "homepage": "https://github.com/rametta/meatball#readme",
   "author": "Jason Rametta",
   "license": "apache-2.0",
+  "scripts": {
+    "build": "babel src -d dist"
+  },
   "peerDependencies": {
     "fluture": "10.x"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.1.6",
+    "@babel/cli": "^7.1.5",
+    "@babel/core":"^7.1.6"
   },
   "keywords": [
     "redux",
