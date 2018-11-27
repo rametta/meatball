@@ -16,6 +16,11 @@ const dispatcher = dispatch => actions => {
   }
 }
 
+// filterEpic :: Action -> Epic[]|Epic -> Boolean
+const filterEpic = action => epic => epic.type.constructor === Array 
+  ? epic.type.indexOf(action.type) > -1
+  : epic.type === action.type
+
 // meatball :: Epic[] -> Store -> Next -> Action -> IO
 const meatball = epics => {
   if (!epics || epics.constructor !== Array) {
@@ -24,7 +29,7 @@ const meatball = epics => {
 
   let counter = 1
   const cache = {}
-  
+
   return store => next => action => {
 
     const result = next(action)
@@ -32,7 +37,7 @@ const meatball = epics => {
     const actioner = dispatcher(store.dispatch)
 
     epics
-      .filter(epic => epic.type.indexOf(action.type) > -1)
+      .filter(filterEpic(action))
       .forEach(epic => {
         const unsub = epic.do(result, postActionState).fork(actioner, actioner)
 
@@ -47,7 +52,7 @@ const meatball = epics => {
         }
 
       })
-    
+
   }
 }
 
