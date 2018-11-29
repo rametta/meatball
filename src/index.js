@@ -41,10 +41,11 @@ const meatball = epics => {
     epics
       .filter(filterEpic(action))
       .forEach(epic => {
-        const unsub = epic
-          .do(result, postActionState)
-          .chain(actions => epic.debounce ? after(epic.debounce, actions) : of(actions))
-          .fork(actioner, actioner)
+        const unsub = epic.debounce
+          ? after(epic.debounce, '')
+              .chain(() => epic.do(result, postActionState))
+              .fork(actioner, actioner)
+          : epic.do(result, postActionState).fork(actioner, actioner)
 
         if (epic.latest || epic.debounce) {
           const id = counter++
