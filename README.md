@@ -64,7 +64,7 @@ const debounceEpic = {
     .mapRej(filterErr)) // redux action for handling error
 }
 
-export default [ simpleEpic, multipleEpic, complexEpic ]
+export default [simpleEpic, multipleEpic, complexEpic, debounceEpic]
 
 // index.js
 import meatball from 'meatball'
