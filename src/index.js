@@ -1,3 +1,5 @@
+import { after, of } from 'fluture'
+
 // dispatcher :: Dispatch -> Action|Action[] -> IO
 const dispatcher = dispatch => actions => {
   if (!actions) {
@@ -39,9 +41,12 @@ const meatball = epics => {
     epics
       .filter(filterEpic(action))
       .forEach(epic => {
-        const unsub = epic.do(result, postActionState).fork(actioner, actioner)
+        const unsub = epic
+          .do(result, postActionState)
+          .chain(actions => epic.debounce ? after(epic.debounce, actions) : of(actions))
+          .fork(actioner, actioner)
 
-        if (epic.latest) {
+        if (epic.latest || epic.debounce) {
           const id = counter++
 
           if (cache[epic.type.toString()] && cache[epic.type.toString()].id !== id) {

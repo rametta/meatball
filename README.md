@@ -54,6 +54,16 @@ const complexEpic = {
     .mapRej(searchErr)
 }
 
+// Debounce example
+const debounceEpic = {
+  type: 'FILTER_SOMETHING', // listen for this action
+  debounce: 1000, // debounce this action call for 1s
+  do: ({ payload }) => tryP(() => fetch(payload)) // fetch async data
+    .map(res => res.json())
+    .map(data => filterRes(data)) // redux action to save data
+    .mapRej(filterErr)) // redux action for handling error
+}
+
 export default [ simpleEpic, multipleEpic, complexEpic ]
 
 // index.js
