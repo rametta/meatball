@@ -1,4 +1,4 @@
-import { after, of } from 'fluture'
+import { after } from 'fluture'
 
 // dispatcher :: Dispatch -> Action|Action[] -> IO
 const dispatcher = dispatch => actions => {
@@ -23,14 +23,14 @@ const filterEpic = action => epic => epic.type.constructor === Array
   ? epic.type.indexOf(action.type) > -1
   : epic.type === action.type
 
+let counter = 1
+const cache = {}
+
 // meatball :: Epic[] -> Store -> Next -> Action -> IO
 const meatball = epics => {
   if (!epics || epics.constructor !== Array) {
     throw new Error('MEATBALL EPICS MUST BE AN ARRAY')
   }
-
-  let counter = 1
-  const cache = {}
 
   return store => next => action => {
 
